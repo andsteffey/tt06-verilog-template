@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  title:        "Calculator with Pmods"      # Project title
+  title:        "calculator_with_pmods"      # Project title
   author:       "Andrew, Max, and Amanda"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "Calculator the uses Pmod keypad and buttons and flashes between one digit and tens digit on a single seven segment display"      # One line description of what your project does
