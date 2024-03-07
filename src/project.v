@@ -27,7 +27,7 @@ module top(input logic clk, input logic reset, input logic [31:0] cyc_cnt, outpu
    logic rst_n = ! reset;
 
    // Instantiate the Tiny Tapeout module.
-   tt_um_example tt(.*);
+   m5_my_design tt(.*);
 
    assign passed = top.cyc_cnt > 400;
    assign failed = 1'b0;
@@ -44,7 +44,7 @@ endmodule
 // The Tiny Tapeout module
 // =======================
 
-module tt_um_example (
+module m5_my_design (
     input  wire [7:0] ui_in,    // Dedicated inputs - connected to the input switches
     output wire [7:0] uo_out,   // Dedicated outputs - connected to the 7 segment display
        // The FPGA is based on TinyTapeout 3 which has no bidirectional I/Os (vs. TT6 for the ASIC).
@@ -107,11 +107,6 @@ logic FpgaPins_Fpga_CALC_equals_in_a0,
       FpgaPins_Fpga_CALC_equals_in_a2,
       FpgaPins_Fpga_CALC_equals_in_a3;
 
-// For /fpga_pins/fpga|calc$mem.
-logic [7:0] FpgaPins_Fpga_CALC_mem_a3,
-            FpgaPins_Fpga_CALC_mem_a4,
-            FpgaPins_Fpga_CALC_mem_a5;
-
 // For /fpga_pins/fpga|calc$op.
 logic [2:0] FpgaPins_Fpga_CALC_op_a0,
             FpgaPins_Fpga_CALC_op_a1,
@@ -120,8 +115,7 @@ logic [2:0] FpgaPins_Fpga_CALC_op_a0,
 
 // For /fpga_pins/fpga|calc$out.
 logic [7:0] FpgaPins_Fpga_CALC_out_a3,
-            FpgaPins_Fpga_CALC_out_a4,
-            FpgaPins_Fpga_CALC_out_a5;
+            FpgaPins_Fpga_CALC_out_a4;
 
 // For /fpga_pins/fpga|calc$out_digitone.
 logic [7:0] FpgaPins_Fpga_CALC_out_digitone_a4;
@@ -257,10 +251,6 @@ logic FpgaPins_Fpga_CALC_Keypad_sampling_a0,
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_equals_in_a2 <= FpgaPins_Fpga_CALC_equals_in_a1;
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_equals_in_a3 <= FpgaPins_Fpga_CALC_equals_in_a2;
 
-            // Staging of $mem.
-            always_ff @(posedge clk) FpgaPins_Fpga_CALC_mem_a4[7:0] <= FpgaPins_Fpga_CALC_mem_a3[7:0];
-            always_ff @(posedge clk) FpgaPins_Fpga_CALC_mem_a5[7:0] <= FpgaPins_Fpga_CALC_mem_a4[7:0];
-
             // Staging of $op.
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_op_a1[2:0] <= FpgaPins_Fpga_CALC_op_a0[2:0];
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_op_a2[2:0] <= FpgaPins_Fpga_CALC_op_a1[2:0];
@@ -268,7 +258,6 @@ logic FpgaPins_Fpga_CALC_Keypad_sampling_a0,
 
             // Staging of $out.
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_out_a4[7:0] <= FpgaPins_Fpga_CALC_out_a3[7:0];
-            always_ff @(posedge clk) FpgaPins_Fpga_CALC_out_a5[7:0] <= FpgaPins_Fpga_CALC_out_a4[7:0];
 
             // Staging of $prod.
             always_ff @(posedge clk) FpgaPins_Fpga_CALC_prod_a3[7:0] <= FpgaPins_Fpga_CALC_prod_a2[7:0];
@@ -401,8 +390,6 @@ logic FpgaPins_Fpga_CALC_Keypad_sampling_a0,
                assign \///@4$digit_ten = FpgaPins_Fpga_CALC_digit_ten_a4;
                (* keep *) logic  \///@0$equals_in ;
                assign \///@0$equals_in = FpgaPins_Fpga_CALC_equals_in_a0;
-               (* keep *) logic [7:0] \///@3$mem ;
-               assign \///@3$mem = FpgaPins_Fpga_CALC_mem_a3;
                (* keep *) logic [2:0] \///@0$op ;
                assign \///@0$op = FpgaPins_Fpga_CALC_op_a0;
                (* keep *) logic [7:0] \///@3$out ;
@@ -634,8 +621,8 @@ logic FpgaPins_Fpga_CALC_Keypad_sampling_a0,
                            ? 8'b0 :
                         !FpgaPins_Fpga_CALC_valid_a3
                            ? FpgaPins_Fpga_CALC_out_a4 :
-                        FpgaPins_Fpga_CALC_op_a3[2:0] == 3'b100
-                           ? FpgaPins_Fpga_CALC_mem_a5[7:0] :
+                        //$op[2:0] == 3'b100
+                          // ? >>2$mem[7:0] :
                         FpgaPins_Fpga_CALC_op_a3[2:0] == 3'b011
                            ? FpgaPins_Fpga_CALC_quot_a3[7:0] :
                         FpgaPins_Fpga_CALC_op_a3[2:0] == 3'b010
@@ -647,15 +634,15 @@ logic FpgaPins_Fpga_CALC_Keypad_sampling_a0,
                            //default
                            FpgaPins_Fpga_CALC_out_a4[7:0];
                      //mem MUX
-                     assign FpgaPins_Fpga_CALC_mem_a3[7:0] =
-                        FpgaPins_Fpga_CALC_reset_a3
-                           ? 8'b0 :
-                        !FpgaPins_Fpga_CALC_valid_a3
-                           ? FpgaPins_Fpga_CALC_mem_a4 :
-                        FpgaPins_Fpga_CALC_op_a3[2:0] == 3'b101
-                           ? FpgaPins_Fpga_CALC_out_a5 :
+                     //$mem[7:0] =
+                        //$reset
+                         //  ? 8'b0 :
+                        //!$valid
+                         //  ? >>1$mem :
+                       // $op[2:0] == 3'b101
+                       //    ? >>2$out :
                            //default
-                           FpgaPins_Fpga_CALC_mem_a4;
+                         //  >>1$mem;
             
             
                   //_@4
