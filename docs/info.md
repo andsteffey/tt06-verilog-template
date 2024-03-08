@@ -9,12 +9,12 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+The project is a calculator that uses a Pmod keypad to enter numbers and a Pmod button pad to enter the operation. The anwser flash as a 2 digit hex number on a single seven segment display.
 
 ## How to test
 
-Explain how to use your project
+The project is a calculator that uses a Pmod keypad to enter numbers and a Pmod button pad to enter the operation. The anwser flash as a 2 digit hex number on a single seven segment display.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+Pmod keypad and Pmod button pad
